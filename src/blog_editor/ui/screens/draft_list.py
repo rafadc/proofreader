@@ -4,16 +4,22 @@ from textual.binding import Binding
 from blog_editor.ghost.client import GhostClient
 from blog_editor.config.settings import settings
 
+class DraftListTable(DataTable):
+    BINDINGS = [Binding("q", "quit", "Quit")]
+
+    def action_quit(self):
+        self.app.exit()
+
 class DraftListScreen(Screen):
     BINDINGS = [Binding("q", "quit", "Quit")]
 
     def compose(self):
         yield Header()
-        yield DataTable()
+        yield DraftListTable()
         yield Footer()
 
     async def on_mount(self):
-        table = self.query_one(DataTable)
+        table = self.query_one(DraftListTable)
         table.cursor_type = "row"
         table.add_columns("Title", "Updated At", "Status")
         
