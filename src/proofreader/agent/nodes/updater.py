@@ -1,6 +1,6 @@
 from pydantic import BaseModel
-from blog_editor.agent.utils import load_prompts, get_llm_response
-from blog_editor.agent.suggestions import Suggestion
+from proofreader.agent.utils import load_prompts, get_llm_response
+from proofreader.agent.suggestions import Suggestion
 import json
 
 class LexicalUpdateResponse(BaseModel):

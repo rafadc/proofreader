@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from .models import Base, Session, Suggestion, Decision
 
 # TODO: Move to config
-DATABASE_URL = "sqlite:///blog_editor.db"
+DATABASE_URL = "sqlite:///proofreader.db"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

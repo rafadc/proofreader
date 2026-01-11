@@ -2,7 +2,7 @@ from typing import Any
 import yaml
 from pathlib import Path
 from openai import OpenAI
-from blog_editor.config.settings import settings
+from proofreader.config.settings import settings
 
 client = OpenAI(api_key=settings.openai_api_key)
 

@@ -1,6 +1,6 @@
-from blog_editor.agent.nodes.style import analyze_style
-from blog_editor.agent.nodes.typos import correct_typos
-from blog_editor.agent.suggestions import Suggestion, SuggestionType
+from proofreader.agent.nodes.style import analyze_style
+from proofreader.agent.nodes.typos import correct_typos
+from proofreader.agent.suggestions import Suggestion, SuggestionType
 
 def test_analyze_style(sample_post, mock_openai):
     # Mocking the parsed response

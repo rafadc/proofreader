@@ -1,8 +1,8 @@
 from textual.screen import Screen
 from textual.widgets import Header, Footer, DataTable
 from textual.binding import Binding
-from blog_editor.ghost.client import GhostClient
-from blog_editor.config.settings import settings
+from proofreader.ghost.client import GhostClient
+from proofreader.config.settings import settings
 
 class DraftListTable(DataTable):
     BINDINGS = [Binding("q", "quit", "Quit")]

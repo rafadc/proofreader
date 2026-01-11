@@ -1,5 +1,5 @@
-from blog_editor.agent.state import AgentState
-from blog_editor.agent.utils import load_prompts, get_llm_response
+from proofreader.agent.state import AgentState
+from proofreader.agent.utils import load_prompts, get_llm_response
 from pydantic import BaseModel
 
 class StyleAnalysis(BaseModel):

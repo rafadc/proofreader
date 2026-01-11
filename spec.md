@@ -1,4 +1,4 @@
-# Blog Editor
+# Proofreader
 
 An AI-powered agent that helps review and correct drafts in a Ghost blog, providing intelligent suggestions for typos, structure improvements, and content coherence.
 
@@ -148,9 +148,9 @@ The agent is implemented as a LangGraph state machine with sequential node execu
 ### Project Structure
 
 ```
-blog-editor/
+proofreader/
 ├── src/
-│   └── blog_editor/
+│   └── proofreader/
 │       ├── __init__.py
 │       ├── main.py                 # CLI entry point
 │       ├── config/
@@ -191,7 +191,7 @@ blog-editor/
 
 ### CLI Interface
 
-**Entry Point**: `blog-editor`
+**Entry Point**: `proofreader`
 
 **Arguments**:
 - `--help`: Show help message
@@ -199,8 +199,8 @@ blog-editor/
 
 **Example Usage**:
 ```bash
-blog-editor                    # Normal interactive mode
-blog-editor --dry-run         # Review mode only
+proofreader                    # Normal interactive mode
+proofreader --dry-run         # Review mode only
 ```
 
 ### Logging
@@ -260,7 +260,7 @@ blog-editor --dry-run         # Review mode only
 2. Copy .env.example to .env, fill in credentials
 3. Install dependencies: `uv sync`
 4. Run tests: `pytest`
-5. Run application: `blog-editor`
+5. Run application: `proofreader`
 
 ### Code Quality
 - **Ruff**: Strict linting on all code

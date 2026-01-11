@@ -1,9 +1,9 @@
 from langgraph.graph import StateGraph, END
-from blog_editor.agent.state import AgentState
-from blog_editor.agent.nodes.style import analyze_style
-from blog_editor.agent.nodes.typos import correct_typos
-from blog_editor.agent.nodes.structure import improve_structure
-from blog_editor.agent.nodes.coherence import check_coherence
+from proofreader.agent.state import AgentState
+from proofreader.agent.nodes.style import analyze_style
+from proofreader.agent.nodes.typos import correct_typos
+from proofreader.agent.nodes.structure import improve_structure
+from proofreader.agent.nodes.coherence import check_coherence
 
 def create_agent_graph():
     workflow = StateGraph(AgentState)

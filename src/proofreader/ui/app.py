@@ -1,14 +1,14 @@
 from textual.app import App
 from textual import work
-from blog_editor.ui.screens.draft_list import DraftListScreen
-from blog_editor.ui.screens.review import ReviewScreen
-from blog_editor.ui.screens.loading import LoadingScreen
-from blog_editor.ui.screens.result import ResultScreen
-from blog_editor.agent.graph import create_agent_graph
-from blog_editor.ghost.client import GhostClient
-from blog_editor.config.settings import settings
+from proofreader.ui.screens.draft_list import DraftListScreen
+from proofreader.ui.screens.review import ReviewScreen
+from proofreader.ui.screens.loading import LoadingScreen
+from proofreader.ui.screens.result import ResultScreen
+from proofreader.agent.graph import create_agent_graph
+from proofreader.ghost.client import GhostClient
+from proofreader.config.settings import settings
 
-from blog_editor.agent.nodes.updater import create_lexical_update
+from proofreader.agent.nodes.updater import create_lexical_update
 import json
 import html as html_lib
 
@@ -47,9 +47,9 @@ def replace_in_lexical_node(node, original, replacement, count_ref):
         for child in node["children"]:
             replace_in_lexical_node(child, original, replacement, count_ref)
 
-from blog_editor.ui.screens.lexical_preview import LexicalPreviewScreen
+from proofreader.ui.screens.lexical_preview import LexicalPreviewScreen
 
-class BlogEditorApp(App):
+class ProofreaderApp(App):
     TITLE = "Proofreader"
     CSS = """
     Screen {

@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime
-from blog_editor.ghost.models import Post
+from proofreader.ghost.models import Post
 
 @pytest.fixture
 def sample_post():
@@ -18,4 +18,4 @@ def sample_post():
 
 @pytest.fixture
 def mock_openai(mocker):
-    return mocker.patch("blog_editor.agent.utils.client")
+    return mocker.patch("proofreader.agent.utils.client")

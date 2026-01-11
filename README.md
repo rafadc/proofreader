@@ -1,4 +1,4 @@
-# Blog Editor
+# Proofreader
 
 An AI-powered agent that helps review and correct drafts in a Ghost blog, providing intelligent suggestions for typos, structure improvements, and content coherence.
 
@@ -29,11 +29,11 @@ Set the following variables in `.env`:
 To run the application:
 
 ```bash
-uv run blog-editor
+uv run proofreader
 ```
 
 To run in review-only mode (no changes applied to Ghost):
 
 ```bash
-uv run blog-editor --dry-run
+uv run proofreader --dry-run
 ```

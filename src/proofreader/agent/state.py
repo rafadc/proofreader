@@ -1,6 +1,6 @@
 from typing import TypedDict, Optional
-from blog_editor.ghost.models import Post
-from blog_editor.agent.suggestions import Suggestion
+from proofreader.ghost.models import Post
+from proofreader.agent.suggestions import Suggestion
 
 class AgentState(TypedDict):
     post: Post

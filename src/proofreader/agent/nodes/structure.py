@@ -1,6 +1,6 @@
-from blog_editor.agent.state import AgentState
-from blog_editor.agent.utils import load_prompts, get_llm_response
-from blog_editor.agent.suggestions import SuggestionList
+from proofreader.agent.state import AgentState
+from proofreader.agent.utils import load_prompts, get_llm_response
+from proofreader.agent.suggestions import SuggestionList
 
 def improve_structure(state: AgentState) -> dict:
     prompts = load_prompts()

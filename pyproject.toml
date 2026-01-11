@@ -1,5 +1,5 @@
 [project]
-name = "blog-editor"
+name = "proofreader"
 version = "0.1.0"
 description = "AI-powered agent for reviewing and correcting Ghost blog drafts"
 readme = "README.md"
@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.scripts]
-blog-editor = "blog_editor.main:main"
+proofreader = "proofreader.main:main"
 
 [build-system]
 requires = ["hatchling"]

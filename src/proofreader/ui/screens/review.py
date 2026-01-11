@@ -2,7 +2,7 @@ from textual.screen import Screen
 from textual.widgets import Header, Footer, Static, Button
 from textual.containers import Container, Horizontal
 from textual.binding import Binding
-from blog_editor.ui.widgets.diff import DiffViewer
+from proofreader.ui.widgets.diff import DiffViewer
 
 class ReviewScreen(Screen):
     BINDINGS = [
