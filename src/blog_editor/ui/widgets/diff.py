@@ -1,28 +1,26 @@
 from textual.widgets import Static
 from rich.text import Text
+from rich.table import Table
 import difflib
 
 class DiffViewer(Static):
     def update_diff(self, original: str, proposed: str):
-        # Using difflib to generate a diff
-        # This is a basic implementation. Ideally we want character-level highlighting.
-        # Rich doesn't fully support git-style diff highlighting out of the box for text blocks 
-        # in the way `git diff` does mostly line based, but we can do a simple visualization.
+        diff = difflib.ndiff(original.splitlines(), proposed.splitlines())
         
-        # A simple approach is to show original and proposed side-by-side or stacked.
-        # Ore use ndiff.
-        
-        diff = difflib.ndiff(original.splitlines(keepends=True), proposed.splitlines(keepends=True))
-        
-        result = Text()
+        table = Table(show_header=True, header_style="bold magenta", expand=True, show_lines=False)
+        table.add_column("Original", ratio=1)
+        table.add_column("Proposed", ratio=1)
+
         for line in diff:
-            if line.startswith('-'):
-                result.append(line, style="bold red")
-            elif line.startswith('+'):
-                result.append(line, style="bold green")
-            elif line.startswith('?'):
-                 pass # Skip the indicator lines for now
-            else:
-                result.append(line)
-        
-        self.update(result)
+            code = line[:2]
+            content = line[2:]
+            
+            if code == '- ':
+                table.add_row(Text(content, style="bold red on #330000"), "")
+            elif code == '+ ':
+                table.add_row("", Text(content, style="bold green on #003300"))
+            elif code == '  ':
+                table.add_row(Text(content), Text(content))
+            # Ignore '?' lines
+            
+        self.update(table)
