@@ -1,0 +1,48 @@
+graph TD
+    %% Nodes
+    Start([Start])
+    FetchDraft[Fetch Draft from Ghost]
+    FetchPublished[Fetch Last 10-15 Published Posts]
+    
+    subgraph Agent Execution [LangGraph Agent Execution]
+        direction TB
+        StyleAnalysis[Node 1: Style Analysis]
+        TypoCorrections[Node 2: Typo Corrections]
+        StructureImprovements[Node 3: Structure Improvements]
+        CoherenceStorytelling[Node 4: Coherence & Storytelling]
+    end
+
+    subgraph UserInteraction [User Interaction]
+        Review[Suggestion Review Loop]
+        Confirm[Final Confirmation]
+    end
+
+    ApplyChanges[Apply Changes to Ghost]
+    End([End])
+
+    %% Flow
+    Start --> FetchDraft
+    Start --> FetchPublished
+    
+    FetchPublished --> StyleAnalysis
+    FetchDraft --> StyleAnalysis
+    
+    StyleAnalysis -->|Style Guidelines| TypoCorrections
+    FetchDraft -->|Draft Content| TypoCorrections
+    
+    TypoCorrections --> StructureImprovements
+    StructureImprovements --> CoherenceStorytelling
+    
+    CoherenceStorytelling --> Review
+    
+    Review -->|Approve/Reject/Edit| Review
+    Review -->|Done| Confirm
+    
+    Confirm -->|Confirmed| ApplyChanges
+    ApplyChanges --> End
+
+    %% Styling
+    style Start fill:#f9f,stroke:#333,stroke-width:2px
+    style End fill:#f9f,stroke:#333,stroke-width:2px
+    style Agent Execution fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    style UserInteraction fill:#fff3e0,stroke:#e65100,stroke-width:2px
