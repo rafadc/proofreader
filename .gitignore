@@ -1,0 +1,39 @@
+# General
+.DS_Store
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.python-version
+
+# Virtual Environment
+.venv/
+venv/
+env/
+
+# Environment Variables
+.env
+
+# Build & Distribution
+dist/
+build/
+*.egg-info/
+wheels/
+
+# Testing & Code Quality
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+context.xml
+.hypothesis/
+
+# UV
+# uv.lock is usually committed for apps, but depends on user preference. 
+# Since it's present in the file list, I'll assume they might want to commit it.
+# If they wanted to ignore it, I'd add it here. For now I won't ignore uv.lock.
