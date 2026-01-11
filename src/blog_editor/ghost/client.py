@@ -25,7 +25,9 @@ class GhostClient:
         async with httpx.AsyncClient() as client:
              # This is a simplification. URL construction should be more robust.
             api_url = f"{self.url}/ghost/api/admin/posts/"
-            params = {"limit": limit, "formats": "html,mobiledoc", "status": status} 
+            params = {"limit": limit, "formats": "html,mobiledoc"}
+            if status != "all":
+                params["filter"] = f"status:{status}"
             
             response = await client.get(
                 api_url, 
