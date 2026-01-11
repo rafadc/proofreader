@@ -3,6 +3,7 @@ from textual import work
 from blog_editor.ui.screens.draft_list import DraftListScreen
 from blog_editor.ui.screens.review import ReviewScreen
 from blog_editor.ui.screens.loading import LoadingScreen
+from blog_editor.ui.screens.result import ResultScreen
 from blog_editor.agent.graph import create_agent_graph
 from blog_editor.ghost.client import GhostClient
 from blog_editor.config.settings import settings
@@ -95,12 +96,11 @@ class BlogEditorApp(App):
 
         self.notify(f"Applying {len(approved_suggestions)} changes...")
         
-        # Here we would actually modify the content.
-        # For this PoC, we will just simulate/log it or do simple replacement if possible.
-        # But since we don't have robust text replacement logic for HTML yet, we'll just mock the update.
+        message = ""
+        success = True
         
         if self.dry_run:
-            self.notify("Dry run: Changes would be applied to Ghost.", severity="information", timeout=5)
+            message = f"Dry run: {len(approved_suggestions)} changes would be applied to Ghost."
         else:
              # Logic to apply changes to post.html or post.mobiledoc
              # For now, we mock an update to updated_at to show we did something
@@ -110,8 +110,9 @@ class BlogEditorApp(App):
                  new_html = post.html # Placeholder
                  
                  await client.update_post(post.id, {"html": new_html}, post.updated_at)
-                 self.notify("Changes applied successfully!", severity="success")
+                 message = f"Successfully applied {len(approved_suggestions)} changes to Ghost!"
              except Exception as e:
-                 self.notify(f"Failed to apply changes: {e}", severity="error")
+                 success = False
+                 message = f"Failed to apply changes: {e}"
                  
-        self.exit()
+        self.push_screen(ResultScreen(message, success), lambda _: self.exit())
