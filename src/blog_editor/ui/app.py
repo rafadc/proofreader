@@ -44,7 +44,13 @@ class BlogEditorApp(App):
             "error": None
         }
         
-        final_state = await self.agent_graph.ainvoke(state)
+        # Stream the execution to show progress
+        final_state = state
+        async for output in self.agent_graph.astream(state):
+            for node_name, node_update in output.items():
+                node_display = node_name.replace("_", " ").title()
+                self.notify(f"Finished {node_display}...")
+                final_state.update(node_update)
         
         if final_state.get("error"):
             self.notify(f"Analysis failed: {final_state['error']}", severity="error")
