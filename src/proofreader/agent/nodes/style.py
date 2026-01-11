@@ -1,30 +1,47 @@
 from proofreader.agent.state import AgentState
 from proofreader.agent.utils import load_prompts, get_llm_response
+from proofreader.ghost.client import GhostClient
+from proofreader.config.settings import settings
 from pydantic import BaseModel
 
 class StyleAnalysis(BaseModel):
     guidelines: str
 
-def analyze_style(state: AgentState) -> dict:
+async def analyze_style(state: AgentState) -> dict:
     prompts = load_prompts()
-    # In a real scenario, we would retrieve past posts. 
-    # For now, we'll just analyze the current text as a starting point 
-    # or assume we have some context. 
-    # The spec mentions retrieving last 10-15 posts. 
-    # TODO: Implement retrieval of past posts context
+    client = GhostClient(settings.ghost_url, settings.ghost_api_key)
     
-    # Just setting a placeholder analysis if we have no past posts
-    # Or we can ask the LLM to infer style from the draft itself if it's long enough
-    
+    past_posts_text = ""
+    try:
+        # Retrieve the last 15 published posts to understand the blog's style
+        past_posts = await client.get_posts(limit=15, status="published")
+        if past_posts:
+            # Concatenate the content of past posts. 
+            # We prefer HTML, but fallback to mobiledoc or raw text if needed.
+            # Truncate each post to avoid exploding context if they are huge? 
+            # For now, let's assume they fit.
+            past_posts_text = "\n\n---\n\n".join(
+                [f"Title: {p.title}\nContent:\n{p.html or p.mobiledoc or p.lexical or ''}" for p in past_posts]
+            )
+    except Exception as e:
+        print(f"Failed to retrieve past posts: {e}")
+
     system_prompt = prompts["style_analysis_system"]
-    user_prompt = f"Analyze the style of this text:\n\n{state['post'].html or state['post'].mobiledoc or ''}"
     
-    # We expect a string or a structured object? Spec says "Extract blog style guidelines"
-    # Let's just get any text for now to put in the guidelines string
-    
-    # Note: get_llm_response with response_model requires a pydantic model.
-    # We can define a simple one.
-    
+    if past_posts_text:
+        user_prompt = (
+            f"Here are the last {len(past_posts)} published posts from the blog:\n\n"
+            f"{past_posts_text}\n\n"
+            "Analyze these posts to create a comprehensive style guide for this blog."
+        )
+    else:
+        # Fallback to analyzing the current draft if no past posts are available
+        print("No past posts available for style analysis. Using current draft.")
+        user_prompt = (
+            f"Analyze the style of this text:\n\n"
+            f"{state['post'].html or state['post'].mobiledoc or ''}"
+        )
+
     try:
         response = get_llm_response(system_prompt, user_prompt, StyleAnalysis)
         return {"style_guidelines": response.guidelines}
