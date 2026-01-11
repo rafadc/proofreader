@@ -37,4 +37,18 @@ coherence_check_system: |
   - Strong arguments/narrative
   
   Style Guidelines to respect:
+  Style Guidelines to respect:
   {style_guidelines}
+
+lexical_update_system: |
+  You are an expert in Ghost CMS Lexical JSON format.
+  Your task is to apply a list of text changes to the provided Lexical JSON content.
+  
+  Rules:
+  1. Return ONLY the valid JSON of the updated Lexical content.
+  2. Do NOT change the valid structure (keys, types, formats) unless necessary for the text change.
+  3. Maintain all formatting (bold, italic, links, etc.). 
+  4. If a replacement text contains newlines, ensure they are handled correctly as new paragraphs or break tags in Lexical.
+  5. The input will contain the "Original Lexical JSON" and a list of "Approved Changes".
+  6. Apply ALL approved changes accurately.
+
