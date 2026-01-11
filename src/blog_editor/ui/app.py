@@ -8,6 +8,27 @@ from blog_editor.agent.graph import create_agent_graph
 from blog_editor.ghost.client import GhostClient
 from blog_editor.config.settings import settings
 
+import json
+import html as html_lib
+
+def replace_in_lexical_node(node, original, replacement, count_ref):
+    """Recursively search and replace text in a Lexical node tree."""
+    if count_ref['count'] > 0:
+        return
+
+    if node.get("type") == "text" and "text" in node:
+        text = node["text"]
+        if original in text:
+            # Replace first occurrence
+            new_text = text.replace(original, replacement, 1)
+            node["text"] = new_text
+            count_ref['count'] += 1
+            return
+    
+    if "children" in node:
+        for child in node["children"]:
+            replace_in_lexical_node(child, original, replacement, count_ref)
+
 class BlogEditorApp(App):
     CSS = """
     Screen {
@@ -74,14 +95,7 @@ class BlogEditorApp(App):
         suggestions = final_state.get("suggestions", [])
         if not suggestions:
             self.notify("No suggestions found!")
-            self.push_screen(DraftListScreen(), self.on_draft_selected) # Go back to list if nothing found? Or exit? 
-            # Original logic was exit, but maybe we should just go back to list.
-            # But wait, original logic:
-            # self.app.push_screen(DraftListScreen(), ...) in on_mount.
-            # Here we are in run_analysis.
-            # If we exit, the app closes. 
-            # Prior logic: self.exit().
-            # I will keep self.exit() for now to match prior behavior, unless user wants otherwise.
+            self.push_screen(DraftListScreen(), self.on_draft_selected) 
             self.exit()
             return
             
@@ -98,19 +112,63 @@ class BlogEditorApp(App):
         
         message = ""
         success = True
+        applied_count = 0
+        
+        # Determine if we can use Lexical or fallback to HTML
+        use_lexical = bool(post.lexical)
+        
+        new_html = post.html or ""
+        new_lexical = None
+        
+        if use_lexical:
+            try:
+                lexical_data = json.loads(post.lexical)
+                for suggestion in approved_suggestions:
+                    count_ref = {'count': 0}
+                    # Unescape original text as the agent sees HTML which might be escaped
+                    original_clean = html_lib.unescape(suggestion.original_text)
+                    
+                    if "root" in lexical_data:
+                        replace_in_lexical_node(lexical_data["root"], original_clean, suggestion.proposed_text, count_ref)
+                    
+                    if count_ref['count'] > 0:
+                        applied_count += 1
+                    else:
+                         # Try with the raw string just in case
+                        count_ref['count'] = 0
+                        replace_in_lexical_node(lexical_data["root"], suggestion.original_text, suggestion.proposed_text, count_ref)
+                        if count_ref['count'] > 0:
+                             applied_count += 1
+                        else:
+                             self.notify(f"Could not find text in Lexical: {suggestion.original_text[:20]}...", severity="warning")
+                
+                new_lexical = json.dumps(lexical_data)
+                
+            except Exception as e:
+                self.notify(f"Error parsing Lexical data: {e}. Falling back to HTML.", severity="error")
+                use_lexical = False
+
+        if not use_lexical:
+            # Fallback to HTML logic
+            for suggestion in approved_suggestions:
+                if suggestion.original_text in new_html:
+                    new_html = new_html.replace(suggestion.original_text, suggestion.proposed_text, 1)
+                    applied_count += 1
+                else:
+                    self.notify(f"Could not find text: {suggestion.original_text[:20]}...", severity="warning")
         
         if self.dry_run:
-            message = f"Dry run: {len(approved_suggestions)} changes would be applied to Ghost."
+            mode = "Lexical" if use_lexical else "HTML"
+            message = f"Dry run ({mode}): {applied_count} changes would be applied to Ghost (out of {len(approved_suggestions)} approved)."
         else:
-             # Logic to apply changes to post.html or post.mobiledoc
-             # For now, we mock an update to updated_at to show we did something
              try:
                  client = GhostClient(settings.ghost_url, settings.ghost_api_key)
-                 # We would construct the new HTML here
-                 new_html = post.html # Placeholder
+                 if use_lexical:
+                     await client.update_post(post.id, {"lexical": new_lexical}, post.updated_at)
+                 else:
+                     await client.update_post(post.id, {"html": new_html}, post.updated_at)
                  
-                 await client.update_post(post.id, {"html": new_html}, post.updated_at)
-                 message = f"Successfully applied {len(approved_suggestions)} changes to Ghost!"
+                 message = f"Successfully applied {applied_count} changes to Ghost!"
              except Exception as e:
                  success = False
                  message = f"Failed to apply changes: {e}"

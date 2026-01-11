@@ -9,6 +9,7 @@ class Post(BaseModel):
     slug: str
     html: Optional[str] = None
     mobiledoc: Optional[str] = None
+    lexical: Optional[str] = None
     feature_image: Optional[str] = None
     featured: bool = False
     status: str
