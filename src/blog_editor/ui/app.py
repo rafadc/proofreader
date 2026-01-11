@@ -2,6 +2,7 @@ from textual.app import App
 from textual import work
 from blog_editor.ui.screens.draft_list import DraftListScreen
 from blog_editor.ui.screens.review import ReviewScreen
+from blog_editor.ui.screens.loading import LoadingScreen
 from blog_editor.agent.graph import create_agent_graph
 from blog_editor.ghost.client import GhostClient
 from blog_editor.config.settings import settings
@@ -29,6 +30,8 @@ class BlogEditorApp(App):
             
         post = self.post_map.get(post_id)
         if post:
+            self.loading_screen = LoadingScreen()
+            self.push_screen(self.loading_screen)
             self.run_analysis(post)
 
     @work(exclusive=True)
@@ -46,12 +49,23 @@ class BlogEditorApp(App):
         
         # Stream the execution to show progress
         final_state = state
-        async for output in self.agent_graph.astream(state):
-            for node_name, node_update in output.items():
-                node_display = node_name.replace("_", " ").title()
-                self.notify(f"Finished {node_display}...")
-                final_state.update(node_update)
+        try:
+            async for output in self.agent_graph.astream(state):
+                for node_name, node_update in output.items():
+                    node_display = node_name.replace("_", " ").title()
+                    # self.notify(f"Finished {node_display}...")
+                    if hasattr(self, 'loading_screen'):
+                         self.loading_screen.update_status(f"Finished {node_display}...")
+                    
+                    final_state.update(node_update)
+        except Exception as e:
+            self.pop_screen() # Remove loading screen
+            self.notify(f"Analysis error: {e}", severity="error")
+            return
         
+        # Remove loading screen
+        self.pop_screen()
+
         if final_state.get("error"):
             self.notify(f"Analysis failed: {final_state['error']}", severity="error")
             return
@@ -59,6 +73,14 @@ class BlogEditorApp(App):
         suggestions = final_state.get("suggestions", [])
         if not suggestions:
             self.notify("No suggestions found!")
+            self.push_screen(DraftListScreen(), self.on_draft_selected) # Go back to list if nothing found? Or exit? 
+            # Original logic was exit, but maybe we should just go back to list.
+            # But wait, original logic:
+            # self.app.push_screen(DraftListScreen(), ...) in on_mount.
+            # Here we are in run_analysis.
+            # If we exit, the app closes. 
+            # Prior logic: self.exit().
+            # I will keep self.exit() for now to match prior behavior, unless user wants otherwise.
             self.exit()
             return
             
